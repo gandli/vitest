@@ -53,17 +53,9 @@ export function getCachedVitestImport(
     id.startsWith(relativeRoot)
   ) {
     const { file, postfix } = splitFileAndPostfix(id)
-    // This branch only matches ids inside Vitest's own dist directory
-    // (`relativeRoot` is `distDir` relative to the project root). Rebuilding
-    // the path from `root` would use the root's drive letter casing, which on
-    // Windows can differ from the casing Node.js actually loaded Vitest with
-    // (derived from `import.meta.url` in `paths.ts`, e.g. when the CLI is
-    // started from a lower-case drive-letter cwd while Vite resolves the
-    // root with an upper-case drive letter). Node.js caches modules by URL
-    // string, so a casing mismatch here loads a second copy of the Vitest
-    // runtime where `describe`/`afterEach` are registered without a runner
-    // ("Vitest failed to find the current suite"). Keep the casing of the
-    // already-loaded Vitest instance instead.
+    // this branch only matches ids inside Vitest's own dist directory, so
+    // keep `distDir`'s casing: externalized ids must match how Node.js
+    // loaded Vitest itself, or Windows would load a second runtime instance
     const path = distDir + file.slice(relativeRoot.length)
     const externalize = `${pathToFileURL(path)}${postfix}`
     externalizeMap.set(id, externalize)

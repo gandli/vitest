@@ -64,12 +64,9 @@ export function VitestCoreResolver(): Plugin {
         return
       }
       if (id === 'vitest') {
-        // `distDir` casing follows the URL Node.js loaded Vitest itself with
-        // (see `paths.ts`). Don't rebuild the path with `pathe`'s `resolve`,
-        // which capitalizes the Windows drive letter — that would produce an
-        // id whose casing no longer matches the loaded module, and Node.js
-        // (caching modules by URL string) would load a second copy of Vitest
-        // inside the worker.
+        // keep `distDir`'s casing: `pathe` capitalizes the Windows drive
+        // letter, but Node.js caches modules by URL, so the casing must
+        // match how Vitest itself was loaded
         return resolvePath(distDir, 'index.js')
       }
       if (id.startsWith('@vitest/') || id.startsWith('vitest/')) {
